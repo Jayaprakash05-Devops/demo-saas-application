@@ -2,7 +2,7 @@
 
 The architecture is divided into five horizontal tiers. Traffic enters through the Edge Tier, passes through the Gateway Tier, is processed in the Compute Tier (Amazon EKS), stored in the Data Tier, and monitored through the Observability Tier. All components run in a dedicated VPC across three Availability Zones.
 
-## Architecture Diagram -- End-to-End Flow:
+Architecture Diagram -- End-to-End Flow:
 
 ![Architecture Diagram](img.png)
 
@@ -52,13 +52,16 @@ The architecture is divided into five horizontal tiers. Traffic enters through t
       - `Amazon Inspector` - Scans Docker images and EC2 nodes for know security vulnerabilities automatically.
       - `Amazon Macie` - Scan s3 buckets and alerts if it finds sensitive data like credit card numbers or personal information that should not be there.
     - Billing, Metering and Cost Management:
-      - The approach has two layers working together. The first layer is usage collection — the system continuously tracks what every tenant consumes (API calls, storage, compute, bandwidth) by injecting a lightweight middleware into the Python API and running background CronJobs. Each metric is tagged with tenant_id so it is always traceable to one specific tenant. The second layer is cost calculation — at the end of each billing period a Lambda function reads all usage data from RDS, applies the pricing tiers (free allowance, standard rate, overage rate), calculates the invoice per tenant, and triggers payment.
-      - Compute (CPU/memory) - CloudWatch Container Insights per namespace → CronJob aggregates every 15 min
+      - AWS resource cost and `tenant usage` are two different things. example AWS EC2/EKS cost does not directly tell the cost of tenant-a and tenant-b.
+        - The approach has two layers working together. The first layer is usage collection — the system continuously tracks what every tenant consumes (API calls, storage, compute, bandwidth) by injecting a lightweight middleware into the Python API and running background CronJobs. Each metric is tagged with tenant_id so it is always traceable to one specific tenant. The second layer is cost calculation — at the end of each billing period a Lambda function reads all usage data from RDS, applies the pricing tiers (free allowance, standard rate, overage rate), calculates the invoice per tenant, and triggers payment.
+        - Compute (CPU/memory) - CloudWatch Container Insights per namespace → CronJob aggregates every 15 min
+        - I would also use AWS tagging wherever possible.
     - Observability:
-      - `CloudWatch` - AWS's build-in monitoring. collects logs, metrics adn triggers alarms when something goes wrong.
-      - `Fluent Bit` - Lightweight log collector running on every node. picks up pod logs and ship then to cloudwatch.
-      - `ADOT/OpenTelemetry Collector` - Collects metrics and distributed traces from python API and send them to cloudwatch and X-Ray for performance monitoring.
-      - `AWS X-Ray` - Shows the full journey fo a request through system. making it easy to find where slowdowns or error happen.
+      - Every request should carry: `tenatn_id`, `request_id`, `trace_id` and `user_id`
+        - `CloudWatch` - AWS's build-in monitoring. collects logs, metrics adn triggers alarms when something goes wrong.
+        - `Fluent Bit` - Lightweight log collector running on every node. picks up pod logs and ship then to cloudwatch.
+        - `ADOT/OpenTelemetry Collector` - Collects metrics and distributed traces from python API and send them to cloudwatch and X-Ray for performance monitoring.
+        - `AWS X-Ray` - Shows the full journey fo a request through system. making it easy to find where slowdowns or error happen.
     - Scalability & High Availability:
       - Scalability — handling more tenants and more traffic:
         - The architecture scales on three independent levels simultaneously:
