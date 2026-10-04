@@ -45,20 +45,17 @@ The CI/CD architecture is designed around the following goals:
 
 | Tool / Service | Role |
 |---|---|
-| **GitHub** | Source control, branches, pull requests, reviews and branch protection |
+| **GitHub** | Source control, branches, pull requests, code reviews, and branch protection |
 | **GitHub Actions** | CI workflow orchestration |
-| **SonarQube** | Code quality, SAST and quality gates |
+| **SonarQube** | Code quality, SAST, and quality gates |
 | **Gitleaks** | Secret detection |
-| **Trivy** | Dependency, container and IaC vulnerability scanning |
-| **Testing** | Frontend: Vitest/Jest + React Testing Library + Playwright
-Backend: pytest + pytest-cov
-Security: SonarQube + Trivy + Gitleaks
-Integration/E2E: Playwright + API integration tests |
+| **Trivy** | Dependency, container, and IaC vulnerability scanning |
+| **Testing** | **Frontend:** Vitest/Jest, React Testing Library, and Playwright<br>**Backend:** pytest and pytest-cov<br>**Security:** SonarQube, Trivy, and Gitleaks<br>**Integration/E2E:** Playwright and API integration tests |
 | **Docker** | Containerized builds and backend packaging |
 | **Helm** | Kubernetes application packaging |
 | **Argo CD** | GitOps continuous delivery |
-| **Argo Rollouts** | Blue/green production deployment |
-| **AWS IAM** | Access control |
+| **Argo Rollouts** | Blue/green production deployments |
+| **AWS IAM** | Access control and permissions management |
 | **GitHub OIDC** | Short-lived GitHub-to-AWS authentication |
 
 ---
