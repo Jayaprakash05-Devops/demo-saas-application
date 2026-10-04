@@ -50,6 +50,10 @@ The CI/CD architecture is designed around the following goals:
 | **SonarQube** | Code quality, SAST and quality gates |
 | **Gitleaks** | Secret detection |
 | **Trivy** | Dependency, container and IaC vulnerability scanning |
+| **Testing** | Frontend: Vitest/Jest + React Testing Library + Playwright
+Backend: pytest + pytest-cov
+Security: SonarQube + Trivy + Gitleaks
+Integration/E2E: Playwright + API integration tests |
 | **Docker** | Containerized builds and backend packaging |
 | **Helm** | Kubernetes application packaging |
 | **Argo CD** | GitOps continuous delivery |
